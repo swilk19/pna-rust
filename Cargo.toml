@@ -7,6 +7,8 @@ edition = "2018"
 
 [dependencies]
 clap = "2.26.0"
+diesel = { version = "*", features = ["sqlite"] }
+dotenv = "*"
 
 [dev-dependencies]
 assert_cmd = "0.11.0"
