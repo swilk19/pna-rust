@@ -1,7 +1,6 @@
 extern crate clap;
 
-use clap::{Arg, App, SubCommand};
-use std::process::exit;
+use clap::{App, Arg, SubCommand};
 
 fn main() {
     let matches = App::new("kvs")
@@ -21,7 +20,7 @@ fn main() {
                         .required(true)
                         .takes_value(true)
                         .index(2),
-                )
+                ),
         )
         .subcommand(
             SubCommand::with_name("get").arg(
@@ -30,7 +29,7 @@ fn main() {
                     .required(true)
                     .takes_value(true)
                     .index(1),
-            )
+            ),
         )
         .subcommand(
             SubCommand::with_name("rm").arg(
@@ -39,7 +38,7 @@ fn main() {
                     .required(true)
                     .takes_value(true)
                     .index(1),
-            )
+            ),
         )
         .get_matches();
 
@@ -50,22 +49,22 @@ fn main() {
             let key = matches.value_of("key").unwrap_or_else(|| panic!());
             let value = matches.value_of("value").unwrap_or_else(|| panic!());
             kvstore.set(key.to_string(), value.to_string());
-            println!("Set '{}' => '{}'", key, value);
-        },
+            println!("Set '{}' => '{}'.", key, value);
+        }
         ("get", Some(matches)) => {
             let key = matches.value_of("key").unwrap_or_else(|| panic!());
             let value = kvstore.get(key.to_string());
             if value.is_some() {
                 let found = value.unwrap();
-                println!("Found '{}' => '{}'", key, found);
+                println!("Found '{}' => '{}'.", key, found);
             } else {
                 println!("No value found for key '{}'.", key);
             }
-        },
+        }
         ("rm", Some(matches)) => {
             let key = matches.value_of("key").unwrap_or_else(|| panic!());
             kvstore.remove(key.to_string());
         }
-        _ => unreachable!()
+        _ => unreachable!(),
     }
 }

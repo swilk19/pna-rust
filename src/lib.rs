@@ -2,8 +2,8 @@
 extern crate diesel;
 extern crate dotenv;
 
-pub mod schema;
 pub mod models;
+pub mod schema;
 
 use self::models::*;
 use self::schema::*;
@@ -20,12 +20,14 @@ fn establish_connection() -> SqliteConnection {
 }
 
 pub struct KvStore {
-    conn: SqliteConnection
+    conn: SqliteConnection,
 }
 
 impl KvStore {
     pub fn new() -> KvStore {
-        KvStore { conn: establish_connection() }
+        KvStore {
+            conn: establish_connection(),
+        }
     }
 
     pub fn set(&mut self, key: String, value: String) {
@@ -33,10 +35,15 @@ impl KvStore {
 
         let key_clone = key.clone();
 
-        let new_value = MappedValue { key_value: key_clone, value: Some(value) };
+        let new_value = MappedValue {
+            key_value: key_clone,
+            value: Some(value),
+        };
+
         if (self.get(key.clone())).is_some() {
             self.remove(key.clone());
         }
+
         diesel::insert_into(map_values::table)
             .values(&new_value)
             .execute(&self.conn)
