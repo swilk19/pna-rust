@@ -1,3 +1,5 @@
+use super::schema::map_values;
+
 #[derive(Queryable)]
 #[derive(Insertable)]
 #[table_name = "map_values"]

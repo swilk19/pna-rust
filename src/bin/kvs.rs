@@ -8,30 +8,64 @@ fn main() {
         .version("0.1.0")
         .subcommand(
             SubCommand::with_name("set")
-                .about("Set the value of a string key to a string")
-                .arg(Arg::with_name("KEY").help("A string key").required(true))
                 .arg(
-                    Arg::with_name("VALUE")
-                        .help("The string value of the key")
-                        .required(true),
-                ),
+                    Arg::with_name("key")
+                        .value_name("KEY")
+                        .required(true)
+                        .takes_value(true)
+                        .index(1),
+                )
+                .arg(
+                    Arg::with_name("value")
+                        .value_name("VALUE")
+                        .required(true)
+                        .takes_value(true)
+                        .index(2),
+                )
         )
         .subcommand(
-            SubCommand::with_name("get")
-                .about("Get the string value of a given string key")
-                .arg(Arg::with_name("KEY").help("A string key").required(true)),
+            SubCommand::with_name("get").arg(
+                Arg::with_name("key")
+                    .value_name("KEY")
+                    .required(true)
+                    .takes_value(true)
+                    .index(1),
+            )
+        )
+        .subcommand(
+            SubCommand::with_name("rm").arg(
+                Arg::with_name("key")
+                    .value_name("KEY")
+                    .required(true)
+                    .takes_value(true)
+                    .index(1),
+            )
         )
         .get_matches();
 
+    let mut kvstore = kvs::KvStore::new();
+
     match matches.subcommand() {
-        ("set", Some(_match)) => {
-            eprintln!("unimplemented");
-            exit(1);
+        ("set", Some(matches)) => {
+            let key = matches.value_of("key").unwrap_or_else(|| panic!());
+            let value = matches.value_of("value").unwrap_or_else(|| panic!());
+            kvstore.set(key.to_string(), value.to_string());
+            println!("Set '{}' => '{}'", key, value);
         },
-        ("get", Some(_match)) => {
-            eprintln!("unimplemented");
-            exit(1);
+        ("get", Some(matches)) => {
+            let key = matches.value_of("key").unwrap_or_else(|| panic!());
+            let value = kvstore.get(key.to_string());
+            if value.is_some() {
+                let found = value.unwrap();
+                println!("Found '{}' => '{}'", key, found);
+            } else {
+                println!("No value found for key '{}'.", key);
+            }
         },
+        ("rm", Some(matches)) => {
+            let key = matches.value_of("key").unwrap_or_else(|| panic!());
+            kvstore.remove(key.to_string());
+        }
         _ => unreachable!()
     }
 }
