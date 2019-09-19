@@ -33,15 +33,13 @@ impl KvStore {
     pub fn set(&mut self, key: String, value: String) {
         use schema::map_values;
 
-        let key_clone = key.clone();
-
         let new_value = MappedValue {
-            key_value: key_clone,
+            key_value: key.clone(),
             value: Some(value),
         };
 
-        if (self.get(key.clone())).is_some() {
-            self.remove(key.clone());
+        if (self.get(key)).is_some() {
+            self.remove(key);
         }
 
         diesel::insert_into(map_values::table)
